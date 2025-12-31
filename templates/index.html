@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoIntel | Sri Lanka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --surface: #ffffff;
+            --background: #010e1f;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--background);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Helper Class for Sinhala Text */
+        .si {
+            font-family: 'Abhaya Libre', serif; /* CHANGED FONT */
+            font-weight: 700; 
+            display: block; 
+            line-height: 1.2;
+            letter-spacing: 0px;
+            
+        }
+
+        /* CARD CONTAINER */
+        .app-card {
+            background: var(--surface);
+            width: 100%;
+            height: 100%;
+            max-width: 1300px;
+            max-height: 850px;
+            display: flex;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.2);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid white;
+        }
+
+        /* LEFT SIDEBAR WITH PHOTO */
+        .sidebar {
+            width: 40%;
+            color: white;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            background-image: url('https://images.unsplash.com/photo-1610647752706-3bb12232b3ab?q=80&w=1925&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            z-index: 0;
+        }
+
+        .sidebar-content { position: relative; z-index: 1; }
+
+        .brand h1 { font-weight: 800; letter-spacing: -1px; margin-bottom: 0.5rem; font-size: 2.5rem; }
+        .brand span { color: var(--accent); }
+        
+        .tagline { 
+            color: #cbd5e1; 
+            font-size: 1.1rem; 
+            line-height: 1.6; 
+            max-width: 90%; 
+            margin-top: 3.5rem; 
+        }
+
+        .si-tagline {
+            font-size: 1.1rem; 
+            color: #94a3b8;
+            margin-top: 15px;
+            opacity: 0.9;
+        }
+
+        .stats-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: auto;
+            margin-bottom: 2rem;
+        }
+
+        /* RIGHT FORM AREA */
+        .main-content {
+            width: 60%;
+            padding: 3rem 4rem;
+            overflow-y: auto;
+            position: relative;
+            background: #f8fafc;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .si-label {
+            font-size: 1rem; /* Adjusted for Abhaya Libre */
+            letter-spacing: 0; 
+            text-transform: none; 
+            color: #64748b;
+            margin-right: 10px;
+        }
+
+        .form-floating > .form-control,
+        .form-floating > .form-select {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .form-floating > .form-control:focus,
+        .form-floating > .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-predict {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            padding: 1rem;
+            border-radius: 10px;
+            border: none;
+            width: 100%;
+            margin-top: 2.5rem;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 1rem;
+            min-height: 60px;
+        }
+
+        .btn-predict:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.15);
+        }
+
+        .result-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 2rem 4rem;
+            transform: translateY(110%);
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            z-index: 10;
+        }
+
+        .result-overlay.active { transform: translateY(0); }
+        .price-tag { font-size: 3rem; font-weight: 800; color: #22c55e; line-height: 1; }
+        .price-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        @media (max-width: 992px) {
+            .app-card { flex-direction: column; margin: 0; border-radius: 0; max-height: none; overflow: auto; }
+            .sidebar { width: 100%; padding: 3rem 2rem; min-height: 300px; }
+            .main-content { width: 100%; padding: 2rem; }
+            .result-overlay { position: fixed; padding: 1.5rem; flex-direction: column; text-align: center; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-card">
+        
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <div class="brand">
+                    <h1>AutoIntel<span>.AI</span></h1>
+                </div>
+                <div class="tagline">
+                    Smart, data-driven vehicle valuations powered by machine learning,
+                    built for Sri Lanka’s automotive market.
+                    <span class="si si-tagline">ශ්‍රී ලංකාවේ වාහන වෙළඳපොල සඳහාම සැකසූ, දත්ත මත පදනම් වූ AI  තාක්ෂණය.</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="stats-box">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="background: rgba(59, 130, 246, 0.2); padding: 10px; border-radius: 8px;">
+                            <i class="fas fa-microchip fa-lg text-white"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.95rem;">System Status: Active</div>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">Model: Random Forest v2.1 (SL Data)</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size: 0.75rem; opacity: 0.5;">
+                    &copy; All Rights Reserved.
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 style="font-weight: 800; color: var(--primary); margin: 0;">New Valuation</h3>
+                    <span class="si" style="color: #64748b; font-size: 0.9rem;">(නව ඇගයීමක් අරඹන්න)</span>
+                </div>
+                <div class="text-muted" style="font-size: 0.9rem;"><i class="far fa-clock me-1"></i> Today's Rates</div>
+            </div>
+
+            <form action="/predict" method="post" id="proForm">
+                
+                <span class="section-label">
+                    <span>01 / Vehicle Identity</span>
+                    <span class="si si-label">වාහනයේ විස්තර</span>
+                </span>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="brand" name="brand" required>
+                                <option value="" selected disabled>Select...</option>
+                                {% for brand in brands %}
+                                <option value="{{ brand }}">{{ brand }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="brand">Make <span class="si" style="display:inline; font-size:1em;">(වර්ගය)</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="model" name="model" required>
+                                <option value="" selected disabled>Select...</option>
+                                {% for model in models %}
+                                <option value="{{ model }}">{{ model }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="model">Model <span class="si" style="display:inline; font-size:1em;">(මාදිලිය)</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="yom" name="yom" required>
+                                {% for year in years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="yom">Year <span class="si" style="display:inline; font-size:1em;">(වර්ෂය)</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="condition" name="condition" required>
+                                <option value="Used">Used</option>
+                                <option value="New">New / Unregistered</option>
+                            </select>
+                            <label for="condition">Condition <span class="si" style="display:inline; font-size:1em;">(තත්වය)</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <span class="section-label">
+                    <span>02 / Technical Specs</span>
+                    <span class="si si-label">තාක්ෂණික තොරතුරු</span>
+                </span>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="engine_cc" name="engine_cc" placeholder="1500" required>
+                            <label for="engine_cc">Engine <span class="si" style="display:inline; font-size:1em;font-weight: 80;">(ධාරිතාව CC)</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="millage" name="millage" placeholder="50000" required>
+                            <label for="millage">Mileage <span class="si" style="display:inline; font-size:1em;font-weight: 80;">(කි.මී)</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="fuel" name="fuel" required>
+                                {% for fuel in fuels %}
+                                <option value="{{ fuel }}">{{ fuel }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="fuel">Fuel <span class="si" style="display:inline; font-size:1em;">(ඉන්ධන)</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="gear" name="gear" required>
+                                <option value="Automatic">Automatic</option>
+                                <option value="Manual">Manual</option>
+                            </select>
+                            <label for="gear">Transmission <span class="si" style="display:inline; font-size:1em;">(ගියර්)</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-predict">
+                    <span>Generate Valuation</span>
+                    <span class="si" style="font-size: 1.1em; opacity: 0.8;">(වටිනාකම ගණනය කරන්න)</span>
+                </button>
+            </form>
+        </div>
+
+        <div id="result_overlay" class="result-overlay">
+            <div>
+                <div class="price-label mb-1">Estimated Value <span class="si" style="display:inline; color:#2b2c2b; font-size:1.1em;">(තක්සේරු වටිනාකම)</span></div>
+                <div class="price-tag" id="final_price">---</div>
+            </div>
+            <div>
+                <button class="btn btn-outline-dark border-2 fw-bold px-4 py-2 rounded-pill" onclick="resetForm()">
+                    Reset / <span class="si" style="display:inline;">නව ඇගයීමක්</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const form = document.getElementById("proForm");
+        const resultOverlay = document.getElementById("result_overlay");
+        const priceTag = document.getElementById("final_price");
+        const submitBtn = document.querySelector(".btn-predict");
+        const originalBtnHtml = submitBtn.innerHTML;
+
+        form.addEventListener("submit", function(e){
+            e.preventDefault();
+            
+            submitBtn.innerHTML = '<span>Processing...</span><span class="si" style="font-size:1em">(සකසමින් පවතී...)</span>';
+            submitBtn.style.opacity = "0.8";
+            submitBtn.disabled = true;
+
+            const formData = new FormData(e.target);
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(price => {
+                setTimeout(() => {
+                    priceTag.innerHTML = price + " <span style='font-size: 1.5rem; color: var(--text-muted); font-weight: 600;'>Lakhs</span>";
+                    resultOverlay.classList.add("active");
+                    submitBtn.innerHTML = '<span>Complete</span> <i class="fas fa-check bg-success text-white rounded-circle p-2"></i>';
+                    submitBtn.style.background = "#10b981"; 
+                    submitBtn.style.opacity = "1";
+                }, 800);
+            })
+            .catch(err => {
+                submitBtn.innerHTML = 'Error Occurred. Try Again.';
+                submitBtn.disabled = false;
+            });
+        });
+
+        function resetForm() {
+            resultOverlay.classList.remove("active");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+            submitBtn.style.background = "var(--primary)";
+        }
+    </script>
+</body>
+</html>
